@@ -11,11 +11,13 @@ module;
 export module comet;
 
 export import comet.application;
+export import comet.window;
 
 
 namespace comet
 {
 	
 	export using namespace application;
+	export using namespace window;
 	
 }

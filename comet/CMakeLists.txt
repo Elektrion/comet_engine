@@ -1,4 +1,5 @@
 add_library(comet)
+target_link_libraries(comet PUBLIC glfw)
 target_include_directories(comet PUBLIC "src")
 install(TARGETS comet)
 
@@ -10,4 +11,5 @@ target_sources(comet PUBLIC FILE_SET CXX_MODULES FILES
 	"src/comet.ixx"
 	"src/application/application.ixx"
 	"src/application/application-component.ixx"
+	"src/window/window.ixx"
 )

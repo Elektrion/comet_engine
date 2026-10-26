@@ -8,30 +8,23 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import comet;
 
 
-class ExampleComponent
+class [[=comet::require<comet::WindowComponent>]] ExampleComponent
 {
-private:
-	int counter = 0;
-	
 public:
-	constexpr void onAttach(comet::Application&) noexcept
+	constexpr void onAttach(comet::Application&, comet::WindowComponent&) noexcept
 	{
 		std::println("Attaching ExampleLayer...");
 	}
 	
-	constexpr void onDetach(comet::Application&) noexcept
+	constexpr void onDetach(comet::Application&, comet::WindowComponent&) noexcept
 	{
 		std::println("Detaching ExampleLayer...");
 	}
 	
-	constexpr void onUpdate(comet::Application& app) noexcept
+	constexpr void onUpdate(comet::Application&, comet::WindowComponent&) noexcept
 	{
-		std::println("Updating ExampleLayer, counter is {}.", counter++);
-		if(counter > 10)
-		{
-			std::println("Counter has reached 10, now stopping application!");
-			app.stop();
-		}
+		// This might get annoying...
+		// std::println("Updating ExampleLayer...");
 	}
 };
 
@@ -41,6 +34,7 @@ auto main() -> int
 	std::println("Hello Comet Engine!");
 	
 	comet::Application app;
+	app.addComponent<comet::WindowAPIManagerComponent>();
 	app.addComponent<ExampleComponent>();
 	app.run();
 }
