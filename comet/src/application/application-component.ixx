@@ -27,6 +27,7 @@ namespace comet::application
 	
 	consteval bool hasMultipleComponents(std::meta::info component)
 	{
+		// TODO: standard should now be `annotations_of_with_type`
 		return std::meta::annotations_of(component, ^^decltype(tag_contains_components)).size() > 0;
 	}
 	
@@ -47,7 +48,8 @@ namespace comet::application
 	consteval auto has_pointer_semantics(std::meta::info type) -> bool
 	{
 		auto ops = std::meta::members_of(type, std::meta::access_context::unchecked())
-			| std::ranges::views::filter([](auto member) { return std::meta::display_string_of(member) == "operator->"; });
+			| std::ranges::views::filter(std::meta::is_operator_function)
+			| std::ranges::views::filter([](auto member) { return std::meta::operator_of(member) == std::meta::operators::op_arrow; });
 
 		for (auto _ : ops)
 		 	return true;
@@ -57,10 +59,10 @@ namespace comet::application
 	template<typename Component_t, typename... Args>
 	constexpr void onAttach(Component_t& component, Args&&... args)
 	{
-    if constexpr(std::meta::is_pointer_type(^^Component_t) || has_pointer_semantics(^^Component_t))
-    {
-      component->onAttach(std::forward<Args>(args)...);
-    }
+		if constexpr(std::meta::is_pointer_type(^^Component_t) || has_pointer_semantics(^^Component_t))
+		{
+		  component->onAttach(std::forward<Args>(args)...);
+		}
 		else if constexpr(hasMultipleComponents(^^Component_t))
 		{
 			// TODO: `component.main_component` is not part of contract yet
@@ -84,9 +86,9 @@ namespace comet::application
 	constexpr void onDetach(Component_t& component, Args&&... args)
 	{
 		if constexpr(std::meta::is_pointer_type(^^Component_t) || has_pointer_semantics(^^Component_t))
-    {
-      component->onDetach(std::forward<Args>(args)...);
-    }
+		{
+			component->onDetach(std::forward<Args>(args)...);
+		}
 		else if constexpr(hasMultipleComponents(^^Component_t))
 		{
 			// TODO: `component.main_component` is not part of contract yet
@@ -110,9 +112,9 @@ namespace comet::application
 	constexpr void onUpdate(Component_t& component, Args&&... args)
 	{
 		if constexpr(std::meta::is_pointer_type(^^Component_t) || has_pointer_semantics(^^Component_t))
-    {
-      component->onUpdate(std::forward<Args>(args)...);
-    }
+		{
+			component->onUpdate(std::forward<Args>(args)...);
+		}
 		else if constexpr(hasMultipleComponents(^^Component_t))
 		{
 			// TODO: `component.main_component` is not part of contract yet
@@ -180,13 +182,13 @@ namespace comet::application
 		}
 	};
 
-  template<typename Application_t>
-  using ComponentTypeFor = std::unique_ptr<Component<Application_t>>;
+	template<typename Application_t>
+	using ComponentTypeFor = std::unique_ptr<Component<Application_t>>;
 
-  template<typename Application_t, typename Component_t, typename... Args>
-  constexpr auto makeComponentForOfType(Args&&... args) -> decltype(auto)
-  {
-    return std::make_unique<ConcreteComponent<Application_t, Component_t>>(std::forward<Args>(args)...);
-  }
+	template<typename Application_t, typename Component_t, typename... Args>
+	constexpr auto makeComponentForOfType(Args&&... args) -> decltype(auto)
+	{
+		return std::make_unique<ConcreteComponent<Application_t, Component_t>>(std::forward<Args>(args)...);
+	}
 	
 }
