@@ -8,4 +8,6 @@ target_sources(comet PUBLIC FILE_SET HEADERS FILES
 )
 target_sources(comet PUBLIC FILE_SET CXX_MODULES FILES
 	"src/comet.ixx"
+	"src/application/application.ixx"
+	"src/application/application-component.ixx"
 )

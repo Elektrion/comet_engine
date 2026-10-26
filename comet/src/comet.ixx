@@ -10,8 +10,12 @@ module;
 
 export module comet;
 
+export import comet.application;
+
 
 namespace comet
 {
+	
+	export using namespace application;
 	
 }
